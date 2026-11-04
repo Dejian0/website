@@ -24,7 +24,7 @@ function renderEntry(w: (typeof Content.work)[number], i: number): string {
 }
 
 /**
- * A row of the Education or Honors list: each piece of text painted, flow `<list>-<i>-<piece>`
+ * A row of the Education, Honors or Volunteering list: each piece of text painted, flow `<list>-<i>-<piece>`
  * (the piece's class). A piece without text is left out.
  */
 function renderRow(list: string, i: number, pieces: [piece: string, text: string | undefined][]): string {
@@ -39,9 +39,10 @@ const renderLinks = (links: { label: string; href: string }[]) =>
 export function renderStaticContent(c: typeof Content): string {
   const bio = c.bio.map((p, i) => `<p data-flow="bio-${i}">${e(p)}</p>`).join('\n    ')
   const work = c.work.map(renderEntry).join('\n  ')
-  // list rows are painted too: each Education and Honors row's pieces, and each Skills row
-  const edu = c.education.map((x, i) => renderRow('education', i, [['school', x.school], ['detail', x.detail], ['dates', x.dates]])).join('\n    ')
+  // list rows are painted too: each Education, Honors and Volunteering row's pieces, and each Skills row
+  const edu = c.education.map((x, i) => renderRow('education', i, [['school', x.school], ['detail', x.detail], ['dates', x.dates], ['courses', x.courses]])).join('\n    ')
   const honors = c.honors.map((x, i) => renderRow('honors', i, [['org', x.org], ['detail', x.detail], ['dates', x.dates]])).join('\n    ')
+  const volunteering = c.volunteering.map((x, i) => renderRow('volunteering', i, [['org', x.org], ['detail', x.detail], ['dates', x.dates]])).join('\n    ')
   const skills = c.skills.map((s, i) => `<li><span class="skill" data-flow="focus-${i}">${e(s)}</span></li>`).join('\n    ')
   // the email link has no address in the HTML: the page's script fills it in and shows it (src/page/email.ts)
   const mail = `<li hidden><a class="email" data-mail="${e(encodeEmail(c.email))}"></a></li>`
@@ -69,6 +70,12 @@ export function renderStaticContent(c: typeof Content): string {
   <h2>Honors</h2>
   <ul class="edu">
     ${honors}
+  </ul>
+</section>
+<section id="volunteering" class="sec">
+  <h2>Volunteering</h2>
+  <ul class="edu">
+    ${volunteering}
   </ul>
 </section>
 <section id="focus" class="sec">

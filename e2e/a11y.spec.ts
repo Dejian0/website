@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { bio, contact, education, honors, site, skills, work } from '../src/content.ts'
+import { bio, contact, education, honors, site, skills, volunteering, work } from '../src/content.ts'
 import { HINT_IDLE, HINT_READY_COARSE, HINT_READY_FINE, ROBOT_LABEL } from '../src/interaction/controller.ts'
 import { MAX_LEFT_SHIFT } from '../src/terrain/clearance.ts'
 import type { Rect, Surface } from '../src/terrain/terrain.ts'
@@ -460,7 +460,7 @@ test.describe('keyboard and screen readers', () => {
 
   test('screen reader text', async ({ page }) => {
     await booted(page)
-    const lists = [...education.flatMap((e) => [e.school, e.detail, e.dates]), ...honors.flatMap((h) => [h.org, h.detail, ...(h.dates ? [h.dates] : [])]), ...skills]
+    const lists = [...education.flatMap((e) => [e.school, e.detail, e.dates, ...(e.courses ? [e.courses] : [])]), ...honors.flatMap((h) => [h.org, h.detail, ...(h.dates ? [h.dates] : [])]), ...volunteering.flatMap((v) => [v.org, v.detail, v.dates]), ...skills]
     const notes = [contact, site.note]
     const texts = [...bio, ...work.map((w) => w.blurb), ...lists, ...notes]
     const counts = await page.evaluate((texts) => {
@@ -470,7 +470,7 @@ test.describe('keyboard and screen readers', () => {
       // the innermost elements holding each text whole, that assistive tech is shown
       return texts.map((t) => all.filter((e) => norm(e.textContent) === norm(t) && exposed(e) && ![...e.children].some((c) => norm(c.textContent) === norm(t))).length)
     }, texts)
-    // once each: as often as the page has it (two Honors rows are dated 2024)
+    // once each: as often as the page has it (two Volunteering rows are dated 2023 – 2024)
     expect(counts).toEqual(texts.map((t) => texts.filter((u) => u === t).length))
     // the source paragraphs are what is exposed: one per bio paragraph and work blurb
     expect(await page.locator('#bio p[data-flow]:not([aria-hidden])').count()).toBe(bio.length)

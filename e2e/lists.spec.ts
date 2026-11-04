@@ -15,13 +15,15 @@ type Site = {
   advance(seconds: number): void
 }
 
-// the painted flows of the lists: each Education row's school, degree and dates, each Honors row's
-// giver, award and date (where it has one), and each Skills row; and the notes in Contact and This site
-const EDU_FLOWS = c.education.flatMap((_, i) => ['school', 'detail', 'dates'].map((p) => `education-${i}-${p}`))
+// the painted flows of the lists: each Education row's school, degree and dates (and coursework), each Honors row's
+// giver, award and date (where it has one), each Volunteering row's organization, role and dates, and
+// each Skills row; and the notes in Contact and This site
+const EDU_FLOWS = c.education.flatMap((e, i) => ['school', 'detail', 'dates', ...(e.courses ? ['courses'] : [])].map((p) => `education-${i}-${p}`))
 const HONOR_FLOWS = c.honors.flatMap((h, i) => ['org', 'detail', ...(h.dates ? ['dates'] : [])].map((p) => `honors-${i}-${p}`))
+const VOLUNTEER_FLOWS = c.volunteering.flatMap((_, i) => ['org', 'detail', 'dates'].map((p) => `volunteering-${i}-${p}`))
 const SKILL_FLOWS = c.skills.map((_, i) => `focus-${i}`)
 const NOTE_FLOWS = ['contact-0', 'site-0']
-const FLOWS = [...EDU_FLOWS, ...HONOR_FLOWS, ...SKILL_FLOWS, ...NOTE_FLOWS]
+const FLOWS = [...EDU_FLOWS, ...HONOR_FLOWS, ...VOLUNTEER_FLOWS, ...SKILL_FLOWS, ...NOTE_FLOWS]
 /** The section a flow is in, by its id, as terrain-wiring.ts's sectionOf() (which needs a window to import). */
 const sectionOf = (flow: string) => (flow.startsWith('rule-') ? flow.slice('rule-'.length) : flow.split('-')[0]!)
 
@@ -76,7 +78,7 @@ function trouble(page: Page) {
     const hidden = site.parting().hidden
     const out: string[] = []
     let spots = 0
-    for (const s of surfaces.filter((s) => s.standable && /^(education|honors|focus|contact|site)-|^rule-/.test(s.flow))) {
+    for (const s of surfaces.filter((s) => s.standable && /^(education|honors|volunteering|focus|contact|site)-|^rule-/.test(s.flow))) {
       for (const x of [s.x0, (s.x0 + s.x1) / 2, s.x1]) {
         window.scrollTo(0, s.y - innerHeight / 2)
         site.place(s.id, x)
@@ -120,18 +122,18 @@ for (const width of [1440, 390]) {
         }
       })
       expect(r.painted).toEqual(expect.arrayContaining(FLOWS))
-      // every Skills row and note, every Education and Honors row (on one of its pieces), and the
+      // every Skills row and note, every Education, Honors and Volunteering row (on one of its pieces), and the
       // line under each heading but Work's
       for (const f of [...SKILL_FLOWS, ...NOTE_FLOWS]) expect(r.standable, f).toContain(f)
-      for (const [list, rows] of [['education', c.education], ['honors', c.honors]] as const)
+      for (const [list, rows] of [['education', c.education], ['honors', c.honors], ['volunteering', c.volunteering]] as const)
         for (let i = 0; i < rows.length; i++) expect(r.standable.some((f) => f.startsWith(`${list}-${i}-`)), `${list} row ${i}`).toBe(true)
       // the rows' own lines are not floors: only the lines under the headings are
-      const rules = ['rule-education', 'rule-honors', 'rule-focus', 'rule-contact', 'rule-site']
+      const rules = ['rule-education', 'rule-honors', 'rule-volunteering', 'rule-focus', 'rule-contact', 'rule-site']
       expect(r.rules).toEqual(rules)
       for (const f of rules) expect(r.standable, f).toContain(f)
       // and so every section of the page
       const sections = await page.evaluate(() => [...document.querySelectorAll('#bio, .sec')].map((e) => e.id))
-      expect(sections).toEqual(['bio', 'work', 'education', 'honors', 'focus', 'contact', 'site'])
+      expect(sections).toEqual(['bio', 'work', 'education', 'honors', 'volunteering', 'focus', 'contact', 'site'])
       for (const id of sections) expect(r.standable.some((f) => sectionOf(f) === id), id).toBe(true)
     })
 
@@ -183,9 +185,9 @@ for (const width of [1440, 390]) {
       expect(r.flow).toMatch(/^focus-/)
     })
 
-    test('from the start of the bio, a click sends it to each Honors row, the Contact note and This site', async ({ page }) => {
+    test('from the start of the bio, a click sends it to each Honors and Volunteering row, the Contact note and This site', async ({ page }) => {
       await walking(page)
-      const targets = [...c.honors.map((_, i) => `honors-${i}-`), 'contact-0', 'site-0']
+      const targets = [...c.honors.map((_, i) => `honors-${i}-`), ...c.volunteering.map((_, i) => `volunteering-${i}-`), 'contact-0', 'site-0']
       const r = await page.evaluate((targets) => {
         const site = (window as unknown as { __site: Site }).__site
         return targets.map((target) => {
@@ -224,7 +226,7 @@ for (const width of [320, 360, 375, 430, 640, 768]) {
       await page.evaluate(() => document.getElementById('bio')!.scrollIntoView())
       await expect.poll(() => page.evaluate(() => (window as unknown as { __site: Site }).__site.robot().p)).toBe(1)
       await page.evaluate(() => (window as unknown as { __site: Site }).__site.setSpeed(0))
-      const rows = [...c.education.map((_, i) => `education-${i}-`), ...c.honors.map((_, i) => `honors-${i}-`), ...SKILL_FLOWS, ...NOTE_FLOWS]
+      const rows = [...c.education.map((_, i) => `education-${i}-`), ...c.honors.map((_, i) => `honors-${i}-`), ...c.volunteering.map((_, i) => `volunteering-${i}-`), ...SKILL_FLOWS, ...NOTE_FLOWS]
       const r = await page.evaluate((rows) => {
         const site = (window as unknown as { __site: Site }).__site
         const surfaces = site.surfaces()

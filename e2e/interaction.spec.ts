@@ -529,7 +529,8 @@ const BOUNDS: Record<number, Record<string, Bound>> = {
     up: { met: ['1:meta', '0:meta'], hop: 180, trip: 360, detour: 20 }, // 150 + 150, 0
     'work-1 from 450': { met: ['1:meta'], hop: 190, trip: 190, detour: 20 }, // 158, 0
     'work-1 from 700': { met: ['1:meta'], hop: 190, trip: 190, detour: 20 }, // 158, 0
-    'work-1 from 940': { met: [], hop: 0, trip: 0, detour: 20 }, // the line ends at 875 here: through the gap; 0
+    // the line ends at 875 here, and the role line above it now reaches past that: briefly behind it; 67, 0
+    'work-1 from 940': { met: ['1:meta'], hop: 90, trip: 90, detour: 20 },
   },
   390: {
     'bio to work-1': { met: ['0:title', '0:meta', '1:title', '1:meta'], hop: 400, trip: 690, detour: 760 }, // 333 + 233, 632 (strides down ~30 bio lines)

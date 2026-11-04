@@ -16,8 +16,8 @@ const metric = (size: number, lineHeight: number, weight = 400) => ({ font: `${w
 const BIO_WIDE = metric(32, 46)
 const BIO_NARROW = metric(21, 35)
 const BLURB = metric(16, 24)
-// the lists: each Education and Honors row's name (school, or who gave it), its detail and
-// dates, and each Skills row
+// the lists: each Education, Honors and Volunteering row's name (school, or the organization), its detail and
+// dates (and an Education row's coursework), and each Skills row
 const SCHOOL = metric(16, 20, 600)
 const EDU_DETAIL = metric(14, 17)
 const SKILL = metric(15, 19)
@@ -42,7 +42,7 @@ function metrics(source: HTMLElement) {
 }
 
 /** A list row's text: painted over its static copy, which keeps the row's layout (TextFlow's `over`). */
-const inList = (source: HTMLElement) => /^(education|honors|focus)-/.test(source.dataset.flow ?? '')
+const inList = (source: HTMLElement) => /^(education|honors|volunteering|focus)-/.test(source.dataset.flow ?? '')
 
 /** Where the glyph tops sit below the line box top, after the prototype's surfaceOffset(). */
 const glyphTop = (m: { size: number; lineHeight: number }) => 0.5 * (m.lineHeight - m.size) + 0.13 * m.size
@@ -82,7 +82,7 @@ function ruleLines(): Rule[] {
   })
 }
 
-/** The page section a surface's flow is in, by its id: `bio`, `work`, `education`, `honors`, `focus`, `contact`, `site`, or a rule's. */
+/** The page section a surface's flow is in, by its id: `bio`, `work`, `education`, `honors`, `volunteering`, `focus`, `contact`, `site`, or a rule's. */
 export function sectionOf(flow: string): string {
   return flow.startsWith('rule-') ? flow.slice('rule-'.length) : flow.split('-')[0]!
 }

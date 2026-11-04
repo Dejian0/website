@@ -238,13 +238,16 @@ p[data-flow], p[data-flow] + .flow-paint {
    line can't part (one runs into the other, or off the page), and a date wrapped onto a line of
    its own is too short to stand on: the robot could find no way down past such a row. A Skills
    row keeps that room too, or a row as wide as a small phone's column can't part either. */
+/* An Education row's coursework: a line of its own under the row's name, detail and dates. */
+.edu-item .courses { flex-basis: 100%; }
 @media (max-width: 640px) {
   .edu-item { flex-direction: column; align-items: flex-start; }
+  .edu-item .courses { flex-basis: auto; }
   .edu-item > [data-flow], .skills .skill { max-width: calc(100% - var(--part-room) + var(--page-pad)); }
 }
-.edu-item .detail { font-size: 14px; line-height: 17px; color: var(--sub); }
+.edu-item .detail, .edu-item .courses { font-size: 14px; line-height: 17px; color: var(--sub); }
 .edu-item .dates { font-size: 14px; line-height: 17px; color: var(--sub); white-space: nowrap; }
-.edu-item .detail + .flow-paint, .edu-item .dates + .flow-paint { color: var(--sub); }
+.edu-item .detail + .flow-paint, .edu-item .dates + .flow-paint, .edu-item .courses + .flow-paint { color: var(--sub); }
 
 .skills li { position: relative; font-size: 15px; line-height: 19px; color: #333; padding: 7px 0; }
 .skills .skill { display: block; }

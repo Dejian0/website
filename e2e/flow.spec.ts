@@ -226,7 +226,7 @@ function shiftFromStatic(page: Page) {
   return page.evaluate(() => {
     const { asStatic } = window as unknown as Helpers
     const tops = () =>
-      [...document.querySelectorAll('#work h2, article[data-entry], #education h2, #honors h2, .edu-item, #focus h2, .skills > li, #contact h2, #site h2')].map(
+      [...document.querySelectorAll('#work h2, article[data-entry], #education h2, #honors h2, #volunteering h2, .edu-item, #focus h2, .skills > li, #contact h2, #site h2')].map(
         (e) => e.getBoundingClientRect().top + window.scrollY,
       )
     const layers = document.querySelectorAll('.flow-paint').length
@@ -236,11 +236,12 @@ function shiftFromStatic(page: Page) {
   })
 }
 
-// a painted layer for each bio paragraph and Work blurb, each Education row's three pieces, each
-// Honors row's two or three, each Skills row, and the notes in Contact and This site
+// a painted layer for each bio paragraph and Work blurb, each Education row's three or four pieces, each
+// Honors row's two or three, each Volunteering row's three, each Skills row, and the notes in Contact and This site
+const EDU_PIECES = c.education.reduce((n, e) => n + (e.courses ? 4 : 3), 0)
 const HONOR_PIECES = c.honors.reduce((n, h) => n + (h.dates ? 3 : 2), 0)
-const FLOWS = c.bio.length + c.work.length + 3 * c.education.length + HONOR_PIECES + c.skills.length + 2
-const FIXED_ANCHORS = c.work.length + 6 + c.education.length + c.honors.length + c.skills.length // shiftFromStatic's: entries, headings, rows
+const FLOWS = c.bio.length + c.work.length + EDU_PIECES + HONOR_PIECES + 3 * c.volunteering.length + c.skills.length + 2
+const FIXED_ANCHORS = c.work.length + 7 + c.education.length + c.honors.length + c.volunteering.length + c.skills.length // shiftFromStatic's: entries, headings, rows
 
 test('activation does not shift content', async ({ page }) => {
   await painted(page)
