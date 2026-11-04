@@ -52,7 +52,7 @@ export const work: Entry[] = [
 // A row's coursework, where it has one, goes on a line of its own under the row.
 export const education: { school: string; detail: string; dates: string; courses?: string }[] = [
   { school: 'Massachusetts Institute of Technology', detail: 'Exchange student', dates: 'Fall 2026', courses: 'Coursework: Deep Learning, Feedback Control Systems, AI & Money' },
-  { school: 'ETH Zurich', detail: 'BSc Mechanical Engineering', dates: '2024 – 2027 (expected)' },
+  { school: 'ETH Zurich', detail: 'BSc Mechanical Engineering', dates: '2024 – 2027' },
 ]
 
 // Painted as Education's rows are: who gave it, what it is, and when (where known).
@@ -63,7 +63,7 @@ export const honors: { org: string; detail: string; dates?: string }[] = [
 
 // Painted as Honors' rows are: where, what I did there, and when.
 export const volunteering: { org: string; detail: string; dates: string }[] = [
-  { org: 'Young Founders Network', detail: 'Chapter lead, Switzerland', dates: '2025 – now' },
+  { org: 'Young Founders Network', detail: 'Chapter lead, Switzerland', dates: '2025 – 2026' },
   { org: 'ETH Entrepreneur Club', detail: 'Logistics team, InCube Challenge', dates: '2025' },
   { org: 'Verein für musische Bildung', detail: 'Piano teacher', dates: '2023 – 2024' },
   { org: 'High School Finance Club', detail: 'Founder and head', dates: '2023 – 2024' },
